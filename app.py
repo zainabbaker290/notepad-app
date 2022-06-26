@@ -13,6 +13,17 @@ def all_notes():
             note.pop("body")
         return json.dumps(notes_object)
     
+    if request.method == "POST":
+        notes_file = open("notes.json", "r")
+        notes_object = json.load(notes_file)
+        data = request.json
+        notes_object["notes"].append(data)
+        notes_file.close()
+        notes_file = open("notes.json", "w")
+        notes_file.write(json.dumps(notes_object))
+        notes_file.close()
+        return Response(json.dumps(data), status=201)
+    
 @app.route("/notes/<notes_id>", methods=["GET"])
 def get_note(notes_id):
     notes_file = open("notes.json", "r")
