@@ -4,13 +4,6 @@ import uuid
 from datetime import date
 
 app = Flask(__name__)
-#verify legitimate not curropted data
-#all notes --> if w/o elife or else bad
-#notes methods
-#del
-#/notes --> change to notes -- update -- create, title body, function return, return response 
-
-#update note next 
 
 def serialise_data(file_name):
         notes_file = open(file_name, "r")
