@@ -1,7 +1,1 @@
-{"notes": 
-    {
-        "000": {"title": "my first note","modified": "05/06/2022", "created": "01/06/2022", "body": "xycyfburbur"},
-        "001": {"title": "my second note", "modified": "12/03/2022", "created": "01/02/2022", "body": "second body"},
-        "002": {"title": "my third note", "modified": "05/10/2022", "created": "05/09/2022", "body": "third body"}
-    }
-}
+{"notes": {"000": {"title": "my first note", "modified": "05/06/2022", "created": "01/06/2022", "body": "xycyfburbur"}, "001": {"title": "my second note", "modified": "12/03/2022", "created": "01/02/2022", "body": "second body"}, "002": {"title": "my third note", "modified": "05/10/2022", "created": "05/09/2022", "body": "third body"}}, "1a241ebe-0d04-4ffc-9241-93f361d69095": {"title": "my new note", "body": "why wont this work", "created": "05/07/2022", "modified": "05/07/2022"}, "f5df436b-2650-4c5e-befe-720722672d3b": {"title": "my new note again", "body": "will she work", "created": "05/07/2022", "modified": "05/07/2022"}}

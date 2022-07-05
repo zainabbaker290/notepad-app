@@ -1,5 +1,7 @@
 from flask import Flask, request, Response
 import json
+import uuid 
+from datetime import date
 
 app = Flask(__name__)
 #verify legitimate not curropted data
@@ -7,6 +9,8 @@ app = Flask(__name__)
 #notes methods
 #del
 #/notes --> change to notes -- update -- create, title body, function return, return response 
+
+#update note next 
 
 def serialise_data(file_name):
         notes_file = open(file_name, "r")
@@ -25,18 +29,22 @@ def all_notes():
         
         return json.dumps(notes_object)
     
-    # elif request.method == "POST":
-    #     notes_object = serialise_data("notes.json")
-    #     data = request.json
+    elif request.method == "POST":
+        notes_object = serialise_data("notes.json")
+        data = request.json
+        #using uuid4 creates random uuid 
+        note_id = uuid.uuid4()
+        today = date.today()
+        today = today.strftime("%d/%m/%Y")
+        data["created"] = today
+        data["modified"] = today 
+        notes_object[str(note_id)] = data
+        
+        notes_file = open("notes.json", "w")
+        notes_file.write(json.dumps(notes_object))
+        notes_file.close()
 
-
-
-    #     notes_object["notes"].append(data)
-
-    #     notes_file = open("notes.json", "w")
-    #     notes_file.write(json.dumps(notes_object))
-    #     notes_file.close()
-    #     return Response(json.dumps(data), status=201)
+        return Response(json.dumps(data), status=201)
     
 @app.route("/notes/<notes_id>", methods=["GET"])
 def get_note(notes_id):
