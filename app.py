@@ -5,25 +5,25 @@ from datetime import date
 
 app = Flask(__name__)
 
-def serialise_data(file_name):
+def deserialise_data(file_name):
         notes_file = open(file_name, "r")
         notes_object = json.load(notes_file)
         notes_file.close()
         return notes_object
 
-
 @app.route("/notes", methods=["GET", "POST"])
 def all_notes():
     if request.method == "GET":
-        notes_object = serialise_data("notes.json")
-        for note_value in notes_object.values():
-            for n_value in note_value.values():
-                del n_value["body"]
+        notes_object = deserialise_data("notes.json")
+        notes = notes_object.get("notes")
+
+        for value in notes.values():
+            del value["body"]
         
-        return json.dumps(notes_object)
-    
+        return Response(json.dumps(notes_object), status=200)
+
     elif request.method == "POST":
-        notes_object = serialise_data("notes.json")
+        notes_object = deserialise_data("notes.json")
         data = request.json
         #using uuid4 creates random uuid 
         note_id = uuid.uuid4()
@@ -41,8 +41,9 @@ def all_notes():
     
 @app.route("/notes/<notes_id>", methods=["GET"])
 def get_note(notes_id):
-    notes_object = serialise_data("notes.json")
-    for note in notes_object.values():
-        for key in note.keys():
-            if key == str(notes_id):
-                return json.dumps(note[key])
+    notes_object = deserialise_data("notes.json")
+
+    notes = notes_object.get("notes")
+    for key in notes.keys():
+        if key == str(notes_id):
+            return Response(json.dumps(notes[key]), status=200)
