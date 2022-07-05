@@ -47,3 +47,5 @@ def get_note(notes_id):
     for key in notes.keys():
         if key == str(notes_id):
             return Response(json.dumps(notes[key]), status=200)
+        
+    return Response("note does not exist", status=404)
