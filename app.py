@@ -1,4 +1,4 @@
-from flask import Flask, request, Response
+from flask import Flask, request, Response, request_finished
 import json
 import uuid 
 from datetime import date
@@ -11,7 +11,15 @@ def deserialise_data(file_name):
         notes_file.close()
         return notes_object
 
-@app.route("/notes", methods=["GET", "POST", "PUT"])
+def get_one_note(notes_id):
+        notes_object = deserialise_data("notes.json")
+        notes = notes_object.get("notes")
+        for key in notes.keys():
+            if key == str(notes_id):
+                return [notes[key], notes_object]
+
+
+@app.route("/notes", methods=["GET", "POST"])
 def all_notes():
     if request.method == "GET":
         notes_object = deserialise_data("notes.json")
@@ -39,37 +47,43 @@ def all_notes():
 
         return Response(json.dumps(data), status=201)
     
-    elif request.method == "PUT":
-        notes_object = deserialise_data("notes.json")
-        new_data = request.data
-        new_data = json.loads(new_data.decode('utf-8'))
-        notes = notes_object.get("notes")
-        today = date.today()
-        today = today.strftime("%d/%m/%Y")
-
-        for key in notes.keys():
-            if key == new_data["id"]:
-                needed_note = notes[key]
-                needed_note["body"] = new_data["new_body"]
-                needed_note["modified"] = today
-
-                notes_file = open("notes.json", "w")
-                notes_file.write(json.dumps(notes_object))
-                notes_file.close()
-                return Response(json.dumps(notes[key]), status=200)
-
-        return Response("note does not exist", status=404)
-    
     else:
         Response("method not allowed", status=405)
 
-@app.route("/notes/<notes_id>", methods=["GET"])
+@app.route("/notes/<notes_id>", methods=["GET", "PUT"])
 def get_note(notes_id):
-    notes_object = deserialise_data("notes.json")
 
-    notes = notes_object.get("notes")
-    for key in notes.keys():
-        if key == str(notes_id):
-            return Response(json.dumps(notes[key]), status=200)
+    if request.method == "GET":
+                notes_items = get_one_note(notes_id)
+                note = notes_items[0]
+                return Response(json.dumps(note), status=200)
+    
+    elif request.method == "PUT":
+        notes_item = get_one_note(notes_id)
+        note = notes_item[0]
+        new_data = request.data
+        new_data = json.loads(new_data.decode('utf-8'))
+        today = date.today()
+        today = today.strftime("%d/%m/%Y")
+
+        if new_data["new_body"] == None:
+            note["title"] = new_data["new_title"]
+            note["modified"] = today
         
+        elif new_data["new_title"] == None:
+            note["body"] = new_data["new_body"]
+            note["modified"] = today
+        
+        else:
+            note["title"] = new_data["new_title"]
+            note["body"] = new_data["new_body"]
+            note["modified"] = today
+
+        notes_file = open("notes.json", "w")
+        notes_file.write(json.dumps(notes_item[1]))
+        notes_file.close()
+
+        return Response(json.dumps(note), status=200)
+
     return Response("note does not exist", status=404)
+        
