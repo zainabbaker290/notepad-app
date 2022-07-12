@@ -18,6 +18,10 @@ def get_one_note(notes_id):
             if key == str(notes_id):
                 return [notes[key], notes_object]
 
+def write_to_note(write_object):
+        notes_file = open("notes.json", "w")
+        notes_file.write(json.dumps(write_object))
+        notes_file.close()
 
 @app.route("/notes", methods=["GET", "POST"])
 def all_notes():
@@ -40,11 +44,9 @@ def all_notes():
         data["created"] = today
         data["modified"] = today 
         notes_object[str(note_id)] = data
-        
-        notes_file = open("notes.json", "w")
-        notes_file.write(json.dumps(notes_object))
-        notes_file.close()
 
+        write_to_note(notes_object)
+        
         return Response(json.dumps(data), status=201)
     
     else:
@@ -78,10 +80,8 @@ def get_note(notes_id):
             note["title"] = new_data["new_title"]
             note["body"] = new_data["new_body"]
             note["modified"] = today
-
-        notes_file = open("notes.json", "w")
-        notes_file.write(json.dumps(notes_item[1]))
-        notes_file.close()
+        
+        write_to_note(notes_item[1])
 
         return Response(json.dumps(note), status=200)
 
